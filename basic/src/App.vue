@@ -12,7 +12,7 @@ import Home from './views/Home.vue';
 
 <style scoped>
 #app {
-  background-color: #f3f3f3; /* Ò³Ãæ±³¾°É« */
+  background-color: #f3f3f3;
 }
 
 </style>
