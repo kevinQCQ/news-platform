@@ -1,5 +1,10 @@
 import { createApp } from 'vue'
-import './style.css'
 import App from './App.vue'
+import router from './router'
+// 完整导入Vant
+import Vant from 'vant'
+import 'vant/lib/index.css'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.use(Vant) // 完整注册
+app.use(router).mount('#app')
