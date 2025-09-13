@@ -1,10 +1,11 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
+import "./style.css"
 import router from './router'
-// ÍêÕûµ¼ÈëVant
 import Vant from 'vant'
 import 'vant/lib/index.css'
 
 const app = createApp(App)
-app.use(Vant) // ÍêÕû×¢²á
-app.use(router).mount('#app')
+app.use(Vant) // ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½
+app.use(router)
+app.mount('#app')
