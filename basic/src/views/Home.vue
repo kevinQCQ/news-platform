@@ -17,15 +17,15 @@ import BottomBar from "../components/BottomBar.vue"
 
 <style scoped>
 .home-page {
-  background-color: #f3f3f3; /* 页面背景色 */
+  background-color: #f3f3f3;
 }
 
-/* 顶部栏样式 - 类名使用中划线匹配模板 */
+
 .top-bar {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0; /* 与left:0配合使元素占满整个宽度 */
+  right: 0;
   z-index: 999;
 }
 
