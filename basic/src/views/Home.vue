@@ -1,7 +1,7 @@
 <template>
   <div class="home-page">
     <top-bar class="top-bar"></top-bar>
-    <router-view><content-area></content-area></router-view>
+    <router-view></router-view>
     <bottom-bar></bottom-bar>
   </div>
 </template>

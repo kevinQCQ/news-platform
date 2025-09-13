@@ -27,8 +27,8 @@
           <div class="recommend-title">{{ tab.title }}</div>
 
           <!-- 右侧组合：更多文字 + 图标（用div包裹，确保两者紧密联动） -->
-          <div class="more-group">
-            <div class="more-text">更多</div>
+          <div class="more-group" @click="handleMoreClick()">
+            <div class="more-text" >更多</div>
             <!-- 用CSS画简单箭头图标（也可替换为img/svg） -->
             <div class="more-icon"></div>
           </div>
@@ -62,6 +62,11 @@ const calcColumnNum = computed(() => {
   if (width >= 768) return 4; // 中等屏幕
   return 3;
 });
+
+function handleMoreClick(){
+  router.push('/article-list');
+
+}
 
 const onLoad = () => {
   setTimeout(() => {

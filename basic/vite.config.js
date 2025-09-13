@@ -9,5 +9,4 @@ export default defineConfig({
         vueJsxPlugin(),
         tailwindcss()
     ],
-  plugins: [vue(), tailwindcss()],
 })
