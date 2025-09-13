@@ -1,6 +1,6 @@
 <template>
   <van-list
-    v-model:loading="loading"
+    v-model="loading"
     :finished="finished"
     class="news-list"
   >
