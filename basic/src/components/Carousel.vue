@@ -1,29 +1,33 @@
 <template>
-  <div class="carousel-container">
-    <!-- 移除指示器，增加容器阴影 -->
-    <van-swipe
-      class="swipe"
-      :autoplay="3000"
-      :loop="true"
-      transition="fade"
-      :show-indicators="false"  
-    >
-      <van-swipe-item v-for="(item, index) in swipeList" :key="index" class="swipe-item">
-        <!-- 增加图片容器，用于实现阴影和边框效果 -->
-        <div class="img-wrapper">
-          <img 
-            :src="item.imgUrl" 
-            :alt="item.alt || '轮播图片'" 
-            class="swipe-img" 
-            loading="lazy"  
-          />
-          <!-- 底部渐变遮罩，增加层次感 -->
-          <div class="img-overlay"></div>
-        </div>
-        <!-- 可选：添加图片标题文字 -->
-        <div class="img-caption">{{ item.title }}</div>
-      </van-swipe-item>
-    </van-swipe>
+  <div class="layout-container">
+    <!-- 左侧轮播：保持不变 -->
+    <div class="carousel-container">
+      <van-swipe
+        class="swipe"
+        :autoplay="3000"
+        :loop="true"
+        transition="fade"
+        :show-indicators="false"  
+      >
+        <van-swipe-item v-for="(item, index) in swipeList" :key="index" class="swipe-item">
+          <div class="img-wrapper">
+            <img 
+              :src="item.imgUrl" 
+              :alt="item.alt || '轮播图片'" 
+              class="swipe-img" 
+              loading="lazy"  
+            />
+            <div class="img-overlay"></div>
+          </div>
+          <div class="img-caption">{{ item.title }}</div>
+        </van-swipe-item>
+      </van-swipe>
+    </div>
+
+    <!-- 1. 给右侧组件加外层容器：控制高度对齐 + 宽度占比 -->
+    <div class="right-panel-container">
+      <HeadlinePanel></HeadlinePanel>
+    </div>
   </div>
 </template>
 
@@ -31,8 +35,8 @@
 import { ref } from 'vue'
 import Swipe from 'vant/es/swipe';
 import SwipeItem from 'vant/es/swipe-item';
+import HeadlinePanel from './HeadlinePanel.vue';
 
-// 轮播图数据，增加标题信息用于展示
 const swipeList = ref([
   { 
     imgUrl: 'https://picsum.photos/800/300?random=1', 
@@ -53,29 +57,57 @@ const swipeList = ref([
 </script>
 
 <style scoped>
-.carousel-container {
-  /* 外层容器增加内边距和阴影，营造悬浮感 */
+/* 外层布局容器：保持flex，新增align-items确保子元素高度基准一致 */
+.layout-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
   padding: 10px;
-  margin: 0 10px;
-  border-radius: 16px;
-  background-color: #fff;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start; /* 子元素顶部对齐，避免小屏时拉伸异常 */
 }
 
+/* 左侧轮播容器：新增固定高度，作为右侧对齐的基准 */
+.carousel-container {
+  flex: 1 1 60%;
+  min-width: 320px;
+  border-radius: 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  height: 240px; /* 关键：给左侧加固定高度，大屏时240px */
+}
+
+/* 2. 右侧组件外层容器：关键样式！强制高度与左侧对齐 */
+.right-panel-container {
+  flex: 1 1 35%; /* 宽度占比与左侧匹配 */
+  min-width: 320px; /* 小屏最小宽度 */
+  align-self: stretch; /* 核心：让容器高度拉伸到与左侧轮播一致 */
+  display: flex; /* 让内部HeadlinePanel填满容器 */
+}
+
+/* 3. 让HeadlinePanel填满外层容器（关键：避免内容少导致高度不足） */
+.right-panel-container > .HeadlinePanel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column; /* 内部内容垂直排列 */
+}
+
+/* 原轮播样式：swipe高度与carousel-container一致，保持稳定 */
 .swipe {
-  height: 180px; /* 适当增加高度 */
+  height: 100%; /* 改为100%，继承父容器高度，避免双重固定高度冲突 */
   border-radius: 12px;
   overflow: hidden;
   position: relative;
 }
 
+/* 轮播其他样式保持不变 */
 .swipe-item {
   position: relative;
   transition: transform 0.3s ease;
-}
-
-/* 鼠标悬停时轻微放大，增强交互感 */
-.swipe-item:hover {
-  transform: scale(1.01);
+  height: 100%; /* 确保轮播项填满swipe */
 }
 
 .img-wrapper {
@@ -93,12 +125,10 @@ const swipeList = ref([
   transition: filter 0.5s ease;
 }
 
-/* 悬停时图片略微提亮，增强层次感 */
 .swipe-item:hover .swipe-img {
   filter: brightness(1.05);
 }
 
-/* 底部渐变遮罩，让文字更清晰 */
 .img-overlay {
   position: absolute;
   left: 0;
@@ -106,10 +136,9 @@ const swipeList = ref([
   bottom: 0;
   height: 60%;
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
-  pointer-events: none; /* 不影响图片点击 */
+  pointer-events: none;
 }
 
-/* 图片标题文字 */
 .img-caption {
   position: absolute;
   left: 0;
@@ -119,8 +148,25 @@ const swipeList = ref([
   color: #fff;
   font-size: 16px;
   font-weight: 500;
-  z-index: 10; /* 确保在遮罩上方 */
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* 文字阴影增强可读性 */
+  z-index: 10;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
+}
+
+/* 响应式调整：小屏时统一高度 */
+@media (max-width: 768px) {
+  .layout-container {
+    gap: 12px;
+  }
+
+  /* 小屏时轮播高度降低，右侧也同步降低 */
+  .carousel-container {
+    height: 180px; 
+  }
+
+  .img-caption {
+    font-size: 14px;
+    padding: 16px 12px 12px;
+  }
 }
 </style>

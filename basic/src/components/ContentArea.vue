@@ -16,7 +16,7 @@
       </van-grid>
     </div>
 
-    <carousel></carousel>
+      <carousel class="hero-left"></carousel>
 
     <div class="defen">
       <!-- 3. 合并列表（用动态标题区分，独立数据加载） -->
@@ -45,6 +45,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import carousel from "./Carousel.vue";
+import HeadlinePanel from "./HeadlinePanel.vue";
 import NewsList from "./NewsList.vue";
 import Grid from "vant/es/grid";
 
@@ -186,6 +187,38 @@ const retlist = () => {
   background-color: #ffffff;
   min-height: calc(100vh - 96px); /* 顶部栏46px + 底部栏50px，简化计算 */
   padding-bottom: 10px; /* 底部留空，避免被底部栏遮挡 */
+}
+
+/* 顶部：轮播 + 要闻面板 并排 */
+.hero-row {
+  display: flex;
+  gap: 12px;
+  margin: 10px;
+  align-items: stretch;
+}
+
+.hero-left {
+  flex: 3 1 0;
+}
+
+.hero-right {
+  flex: 2 1 0;
+}
+
+/* 覆盖子组件的顶部外边距，保持对齐 */
+.hero-right :deep(.panel-wrap) {
+  margin-top: 0;
+}
+
+/* 去除轮播在并排时的左右外边距，避免把右侧挤出可视区 */
+.hero-left :deep(.carousel-container) {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .hero-row {
+    flex-direction: column;
+  }
 }
 
 @media (min-width: 768px) {
