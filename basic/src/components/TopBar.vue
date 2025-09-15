@@ -17,6 +17,7 @@
             v-model="value1"
             :options="option1"
             class="dropdown-content"
+            @click="toPage(value1)"
           >
             <template #title>
               <van-icon name="wap-nav" size="20" />
@@ -31,27 +32,31 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { Icon, Grid, GridItem } from "vant";
-import { DropdownMenu, DropdownItem } from "vant";
 
 const router = useRouter();
 
-const value1 = ref(0);
-const value2 = ref("a");
+const value1 = ref(-1);
 const option1 = [
-  { text: "全部商品", value: 0 },
-  { text: "新款商品", value: 1 },
-  { text: "活动商品", value: 2 },
+  { text: "个人主页", value: 0 },
+  { text: "登录注册" ,value: 1 },
+  { text: "振兴动态", value: 2 },
+  { text: "校园活动", value: 3 },
+  { text: "校园风采", value: 4 },
+  { text: "校园公告", value: 5 },
+  { text: "联系我们", value: 6 },
 ];
-const option2 = [
-  { text: "默认排序", value: "a" },
-  { text: "好评排序", value: "b" },
-  { text: "销量排序", value: "c" },
-];
+
 
 function toHome() {
   router.push("/");
 }
+
+function toPage(val){
+  if(val === 1){
+    router.push("/login");
+  }
+}
+
 </script>
 
 <style scoped>
@@ -71,15 +76,7 @@ function toHome() {
   height: 45px;
 }
 
-/* 2. 左侧标题区域：手机端随容器居中，电脑端单独控制 */
-.left-content {
-  /* 手机端：默认样式，无额外定位 */
-}
 
-/* 3. 右侧下拉菜单区域：手机端默认显示，电脑端初始隐藏（后续媒体查询显示） */
-.right-content {
-  display: none; /* 手机端隐藏右侧菜单（原布局靠中间图标触发） */
-}
 
 /* 4. 文字内容样式：保持原有对齐和间距 */
 .text-content {
