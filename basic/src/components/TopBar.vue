@@ -35,15 +35,17 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const value1 = ref(-1);
+const value1 = ref(-2);
 const option1 = [
+  { text: "首页", value: -1 },
   { text: "个人主页", value: 0 },
   { text: "登录注册" ,value: 1 },
-  { text: "振兴动态", value: 2 },
-  { text: "校园活动", value: 3 },
-  { text: "校园风采", value: 4 },
-  { text: "校园公告", value: 5 },
-  { text: "联系我们", value: 6 },
+  { text: "发布文章", value: 2 },
+  { text: "振兴动态", value: 3 },
+  { text: "校园活动", value: 4 },
+  { text: "校园风采", value: 5 },
+  { text: "校园公告", value: 6 },
+  { text: "联系我们", value: 7 },
 ];
 
 
@@ -54,6 +56,15 @@ function toHome() {
 function toPage(val){
   if(val === 1){
     router.push("/login");
+  }
+  if(val === 0){
+    router.push("/admin");
+  }
+  if(val === -1){
+    router.push("/");
+  }
+  if(val === 2){
+    router.push("/article-upload");
   }
 }
 
