@@ -86,7 +86,7 @@ const { leftTitle } = props
 <style scoped>
 .panel-wrap {
     border: 1px solid #e5e6eb;
-    background-color: #fff;
+    background-color: #ffffff;
     border-radius: 2px;
 }
 
@@ -101,7 +101,8 @@ const { leftTitle } = props
 .header-left {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
+
 }
 
 .square {
@@ -116,12 +117,17 @@ const { leftTitle } = props
     font-size: 20px;
     font-weight: 700;
     color: #e60012;
+    width: 100px;
 }
 
 .header-right {
     position: relative;
     color: #e60012;
     font-weight: 700;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .tab-btn {
@@ -132,7 +138,11 @@ const { leftTitle } = props
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
-    padding: 0 2px;
+    padding: 0 12px;
+    width: 100px;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .tab-btn:hover {
@@ -207,5 +217,47 @@ const { leftTitle } = props
     .text {
         font-size: 14px;
     }
+    .panel-wrap {
+        max-width: 310px;
+        min-width: 310px;
+    border: 1px solid #e5e6eb;
+    background-color: #fff;
+    border-radius: 2px;
+}
+.title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e60012;
+}
+.tab-btn {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #9a9a9a;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0 6px;
+    width: 70px;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
+}
+.header-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: 100px;
+}
+}
+@media(min-width:768px){
+
+    .panel-wrap {
+        max-width: 510px;
+        min-width: 510px;
+    border: 1px solid #e5e6eb;
+    background-color: #fff;
+    border-radius: 2px;
+}
 }
 </style>

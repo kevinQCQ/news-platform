@@ -18,24 +18,88 @@
 
       <carousel class="hero-left"></carousel>
 
-    <div class="defen">
-      <!-- 3. 合并列表（用动态标题区分，独立数据加载） -->
-      <div class="recommend" v-for="(tab, tabIndex) in tabs" :key="tabIndex">
-        <!-- 父容器：用Flex控制整体排列 -->
-        <div class="recommend-header">
-          <!-- 左侧标题 -->
-          <div class="recommend-title">{{ tab.title }}</div>
+    <!-- 主体两列布局：左列（要闻资讯 + 振兴动态），右列（专题专栏） -->
+    <div class="main-grid">
+      <!-- 左列：依次渲染 tabs，保证“振兴动态”在“要闻资讯”下方且左右对齐 -->
+      <div class="left-col">
+        <div class="recommend" v-for="(tab, tabIndex) in tabs" :key="tabIndex">
+          <div class="recommend-header">
+            <div class="recommend-title">{{ tab.title }}</div>
+            <div class="more-group" @click="handleMoreClick()">
+              <div class="more-text">更多</div>
+              <div class="more-icon"></div>
+            </div>
+          </div>
+          <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+            <NewsList @click="toPage(tab.title)"></NewsList>
+          </van-pull-refresh>
+        </div>
+      </div>
 
-          <!-- 右侧组合：更多文字 + 图标（用div包裹，确保两者紧密联动） -->
-          <div class="more-group" @click="handleMoreClick()">
-            <div class="more-text" >更多</div>
-            <!-- 用CSS画简单箭头图标（也可替换为img/svg） -->
-            <div class="more-icon"></div>
+      <!-- 右列：专题专栏（与左列顶部对齐，统一留白与圆角） -->
+      <div class="right-col">
+        <div class="special-panel">
+          <div class="special-header">专题专栏</div>
+          <div class="special-body">
+            <a class="special-card" href="javascript:void(0)" @click="goToSpecialTopic('lianghui')">
+              <img src="https://picsum.photos/360/140?random=21" alt="专题" />
+            </a>
+            <a class="special-card" href="javascript:void(0)" @click="goToSpecialTopic('tuopingongjian')">
+              <img src="https://picsum.photos/360/120?random=22" alt="专题" />
+            </a>
+            <ul class="special-list">
+              <li class="special-item" @click="goToSpecialTopic('lianghui')">2024："两会"聚焦</li>
+              <li class="special-item" @click="goToSpecialTopic('tuopingongjian')">我所经历的脱贫攻坚故事</li>
+              <li class="special-item" @click="goToSpecialTopic('chengguo')">巩固拓展脱贫攻坚成果典型</li>
+              <li class="special-item" @click="goToSpecialTopic('sanxiaxiang')">大学生"三下乡"活动</li>
+            </ul>
           </div>
         </div>
-        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-          <NewsList></NewsList>
-        </van-pull-refresh>
+
+        <!-- 学习园地：位于专题专栏下方，与上方面板保持同宽与圆角 -->
+        <div class="learning-panel">
+          <div class="lp-header">
+            <div class="lp-title">学习园地</div>
+            <button class="lp-more" @click="goToLearningCenter()">更多></button>
+          </div>
+          <div class="lp-tabs">
+            <button 
+              class="lp-tab" 
+              :class="{ active: activeLearningTab === 'gaoduan' }"
+              @click="switchLearningTab('gaoduan')"
+            >高端观点</button>
+            <button 
+              class="lp-tab" 
+              :class="{ active: activeLearningTab === 'shuji' }"
+              @click="switchLearningTab('shuji')"
+            >书记视窗</button>
+            <button 
+              class="lp-tab" 
+              :class="{ active: activeLearningTab === 'xuexi' }"
+              @click="switchLearningTab('xuexi')"
+            >学而时习</button>
+          </div>
+          <div class="lp-body">
+            <div class="lp-cards">
+              <a class="lp-card" href="javascript:void(0)" @click="goToLearningArticle(1)">
+                <img :src="currentLearningData.cards[0].image" :alt="currentLearningData.cards[0].title" />
+                <div class="lp-caption">{{ currentLearningData.cards[0].title }}</div>
+              </a>
+              <a class="lp-card" href="javascript:void(0)" @click="goToLearningArticle(2)">
+                <img :src="currentLearningData.cards[1].image" :alt="currentLearningData.cards[1].title" />
+                <div class="lp-caption">{{ currentLearningData.cards[1].title }}</div>
+              </a>
+            </div>
+            <ul class="lp-list">
+              <li 
+                class="lp-item" 
+                v-for="(item, index) in currentLearningData.list" 
+                :key="index"
+                @click="goToLearningArticle(index + 3)"
+              >{{ item }}</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -66,7 +130,95 @@ const calcColumnNum = computed(() => {
 
 function handleMoreClick(){
   router.push('/article-list');
+}
 
+function toPage(title) {
+  router.push(`/special-topic/lianghui`);
+}
+
+// 专题专栏跳转函数
+function goToSpecialTopic(topicId) {
+  router.push(`/special-topic/${topicId}`);
+}
+
+// 学习园地相关状态和数据
+const activeLearningTab = ref('gaoduan');
+
+// 学习园地数据配置
+const learningData = {
+  gaoduan: {
+    cards: [
+      { 
+        title: '中央农办：以进一步推进乡村全面振兴', 
+        image: 'https://picsum.photos/360/200?random=41' 
+      },
+      { 
+        title: '韩俊：锚定建设农业强国总体目标', 
+        image: 'https://picsum.photos/360/200?random=42' 
+      }
+    ],
+    list: [
+      '魏后凯：扎实推进乡村全面振兴的根本遵循',
+      '黄承伟：加强农村基层党组织建设 推进乡村全面振兴',
+      '黄承伟：中国乡村振兴理论体系构建的基本问题',
+      '许健民：牢牢守住不发生规模性返贫底线'
+    ]
+  },
+  shuji: {
+    cards: [
+      { 
+        title: '县委书记谈乡村振兴实践与思考', 
+        image: 'https://picsum.photos/360/200?random=51' 
+      },
+      { 
+        title: '村支书分享脱贫攻坚成功经验', 
+        image: 'https://picsum.photos/360/200?random=52' 
+      }
+    ],
+    list: [
+      '县委书记：党建引领乡村振兴的实践探索',
+      '村支书：如何带领村民脱贫致富',
+      '第一书记：驻村帮扶工作的心得体会',
+      '乡镇书记：推进农业现代化的思考'
+    ]
+  },
+  xuexi: {
+    cards: [
+      { 
+        title: '学习习近平总书记关于乡村振兴重要论述', 
+        image: 'https://picsum.photos/360/200?random=61' 
+      },
+      { 
+        title: '乡村振兴政策解读与学习要点', 
+        image: 'https://picsum.photos/360/200?random=62' 
+      }
+    ],
+    list: [
+      '学习《习近平关于"三农"工作的重要论述学习读本》',
+      '乡村振兴战略规划学习要点',
+      '巩固拓展脱贫攻坚成果政策解读',
+      '新时代"三农"工作学习指南'
+    ]
+  }
+};
+
+// 当前显示的学习园地数据
+const currentLearningData = computed(() => {
+  return learningData[activeLearningTab.value] || learningData.gaoduan;
+});
+
+// 切换学习园地标签
+function switchLearningTab(tabId) {
+  activeLearningTab.value = tabId;
+}
+
+// 学习园地跳转函数
+function goToLearningCenter() {
+  router.push('/learning-center');
+}
+
+function goToLearningArticle(articleId) {
+  router.push(`/learning-article/${activeLearningTab.value}/${articleId}`);
 }
 
 const onLoad = () => {
@@ -169,6 +321,12 @@ const tabs = ref([
 const retlist = () => {
   return newsData.value.slice(0, 3);
 };
+
+
+function handleMenuClick(){
+
+  router.push('/article-list');
+}
 </script>
 
 <style scoped>
@@ -221,12 +379,205 @@ const retlist = () => {
   }
 }
 
-@media (min-width: 768px) {
-  .defen {
-    background-color: #ffffff;
-    min-height: calc(100vh - 96px); /* 顶部栏46px + 底部栏50px，简化计算 */
-    padding-bottom: 10px; /* 底部留空，避免被底部栏遮挡 */
-    display: flex;
+/* 主体两列布局 */
+.main-grid {
+  display: flex;
+  gap: 12px;
+  margin: 10px;
+  align-items: flex-start;
+}
+
+.left-col {
+  flex: 2 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.right-col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 专题专栏样式，与左侧卡片视觉统一 */
+.special-panel {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.special-header {
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  background-color: #fff;
+}
+
+.special-body {
+  padding: 10px 12px 12px;
+}
+
+.special-card {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.special-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.special-list {
+  margin-top: 6px;
+}
+
+.special-item {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.8;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.special-item:hover {
+  color: #ff0000;
+}
+
+.special-card {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.special-card:hover {
+  opacity: 0.8;
+}
+
+/* 学习园地样式（与截图排版一致） */
+.learning-panel {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.lp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 6px;
+}
+
+.lp-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.lp-more {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lp-tabs {
+  display: flex;
+  gap: 16px;
+  padding: 6px 16px 8px;
+}
+
+.lp-tab {
+  border: none;
+  background-color: #f7f7f7;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.lp-tab.active {
+  background-color: #ffefe6;
+  color: #ff6700;
+}
+
+.lp-body {
+  padding: 0 12px 12px;
+}
+
+.lp-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.lp-card {
+  position: relative;
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.lp-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.lp-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(0,0,0,0.55));
+}
+
+.lp-list { margin-top: 6px; }
+.lp-item {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.9;
+  list-style: none;
+  position: relative;
+  padding-left: 16px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.lp-item::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0.85em;
+  width: 4px;
+  height: 4px;
+  background-color: #333;
+  border-radius: 50%;
+}
+.lp-item:hover {
+  color: #ff0000;
+}
+
+.lp-card {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.lp-card:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .main-grid {
+    flex-direction: column;
   }
 }
 
@@ -261,16 +612,8 @@ const retlist = () => {
 /* 推荐列表：精简边框，优化间距 */
 .recommend {
   background-color: #fff;
-  margin: 10px;
   border-radius: 12px;
   overflow: hidden; /* 确保圆角生效 */
-}
-@media (min-width: 768px) {
-  .recommend {
-    width: 50%;
-    height: 100%;
-    margin: 10px auto; /* 居中显示 */
-  }
 }
 .recommend-title {
   font-size: 16px;

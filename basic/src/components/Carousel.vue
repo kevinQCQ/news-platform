@@ -59,6 +59,7 @@ const swipeList = ref([
 <style scoped>
 /* 外层布局容器：保持flex，新增align-items确保子元素高度基准一致 */
 .layout-container {
+background-color: #ffffff;
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -71,7 +72,8 @@ const swipeList = ref([
 /* 左侧轮播容器：新增固定高度，作为右侧对齐的基准 */
 .carousel-container {
   flex: 1 1 60%;
-  min-width: 320px;
+  margin: 4px;
+  min-width: 170px;
   border-radius: 16px;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -157,11 +159,13 @@ const swipeList = ref([
 @media (max-width: 768px) {
   .layout-container {
     gap: 12px;
+    padding: auto;
   }
 
   /* 小屏时轮播高度降低，右侧也同步降低 */
   .carousel-container {
     height: 180px; 
+    margin: 4px;
   }
 
   .img-caption {
