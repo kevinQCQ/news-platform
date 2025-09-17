@@ -17,7 +17,6 @@
           <img
               :src="item.cover"
               class="news-cover"
-              @error="handleImgError($event)"
               alt="新闻封面"
           >
         </div>
