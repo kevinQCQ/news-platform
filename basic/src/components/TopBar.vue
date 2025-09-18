@@ -10,8 +10,35 @@
         </div>
       </div>
 
-      <!-- 右侧区域：下拉菜单（更多），电脑端靠右，手机端随布局自适应 -->
+      <!-- 右侧区域：用户头像和下拉菜单 -->
       <div class="right-content">
+        <!-- 用户头像 -->
+        <div class="user-avatar" @click="toggleUserMenu">
+          <div class="avatar-circle">
+            <span class="avatar-text">{{ userInitial }}</span>
+          </div>
+        </div>
+        
+        <!-- 用户下拉菜单 -->
+        <van-popover
+          v-model:show="showUserMenu"
+          placement="bottom-end"
+          :offset="[0, 8]"
+          class="user-menu-popover"
+        >
+          <div class="user-menu">
+            <div class="user-info">
+              <div class="user-name">{{ displayUserName }}</div>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item logout" @click="logout">
+              <span>退出登录</span>
+              <van-icon name="arrow" size="12" />
+            </div>
+          </div>
+        </van-popover>
+
+        <!-- 原有的三条横杠菜单 -->
         <van-dropdown-menu class="icon-only">
           <van-dropdown-item
             v-model="value1"
@@ -30,12 +57,35 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 
 const value1 = ref(-2);
+const showUserMenu = ref(false);
+
+// 模拟用户数据（实际项目中应该从状态管理或API获取）
+const userEmail = ref("askn2005@qq.com");
+const userName = ref("艾斯卡诺"); // 改为中文用户名
+const isLoggedIn = ref(true); // 模拟登录状态
+
+// 计算用户首字母
+const userInitial = computed(() => {
+  if (!isLoggedIn.value || !userName.value) {
+    return "未";
+  }
+  return userName.value.charAt(0);
+});
+
+// 计算显示的用户名
+const displayUserName = computed(() => {
+  if (!isLoggedIn.value || !userName.value) {
+    return "未注册";
+  }
+  return userName.value;
+});
+
 const option1 = [
   { text: "首页", value: -1 },
   { text: "个人主页", value: 0 },
@@ -47,7 +97,6 @@ const option1 = [
   { text: "校园公告", value: 6 },
   { text: "联系我们", value: 7 },
 ];
-
 
 function toHome() {
   router.push("/");
@@ -66,6 +115,20 @@ function toPage(val){
   if(val === 2){
     router.push("/article-upload");
   }
+}
+
+// 用户菜单相关函数
+function toggleUserMenu() {
+  showUserMenu.value = !showUserMenu.value;
+}
+
+
+function logout() {
+  // 退出登录的逻辑
+  console.log("Logout");
+  showUserMenu.value = false;
+  // 可以跳转到登录页面
+  router.push("/login");
 }
 
 </script>
@@ -97,9 +160,10 @@ function toPage(val){
 }
 
 .logo-text {
-  font-size: 18px;
+  font-size: 16px; /* 减小字体大小，让标题在一行显示 */
   font-weight: bold;
   cursor: pointer; /* 增加鼠标指针，提示可点击 */
+  white-space: nowrap; /* 防止标题换行 */
 }
 
 .slogan {
@@ -108,11 +172,103 @@ function toPage(val){
   white-space: nowrap; /* 防止标语换行 */
 }
 
-/* 5. 下拉菜单基础样式（保持原有） */
+/* 5. 用户头像样式 */
+.user-avatar {
+  background-color: rgb(247, 247, 247);
+  margin-right: 8px; /* 适中的右边距，让头像与菜单图标距离合适 */
+  cursor: pointer;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.avatar-circle:hover {
+  background-color: #555;
+}
+
+.avatar-text {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 6. 用户下拉菜单样式 */
+.user-menu-popover ::v-deep(.van-popover__content) {
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: rgb(154, 97, 27);
+}
+
+.user-menu {
+  background: #333;
+  border-radius: 8px;
+  min-width: 160px;
+  padding: 8px 0;
+}
+
+.user-info {
+  padding: 8px 16px;
+}
+
+.user-name {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: #555;
+  margin: 8px 0;
+}
+
+.menu-item {
+  padding: 8px 16px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: #444;
+}
+
+.menu-item.logout {
+  color: #ff6b6b;
+}
+
+.menu-item.logout:hover {
+  background-color: #444;
+}
+
+/* 7. 右侧内容区域布局 */
+.right-content {
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 恢复正常的间距 */
+  margin-right: 8px; /* 适中的右边距 */
+  margin-left: 6px;
+}
+
+/* 8. 下拉菜单基础样式（保持原有） */
 .icon-only ::v-deep(.van-dropdown-menu__bar) {
   box-shadow: none !important;
   border: none !important;
-  background: none !important;
+  background: #ffffff !important;
   height: auto;
 }
 
@@ -128,9 +284,12 @@ function toPage(val){
 .dropdown-content {
   box-shadow: none;
   padding: 4px 0;
+  background-color: #4f0505;
 }
 
-/* 6. 媒体查询：屏幕宽度 > 768px（电脑端）时调整布局 */
+
+
+/* 9. 媒体查询：屏幕宽度 > 768px（电脑端）时调整布局 */
 @media (min-width: 768px) {
   /* 电脑端：容器改为左右布局（标题左、菜单右） */
   .top-container {
@@ -144,33 +303,64 @@ function toPage(val){
     align-items: center;
   }
 
-  /* 电脑端：显示右侧下拉菜单（更多） */
+  /* 电脑端：显示右侧内容区域 */
   .right-content {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   /* 电脑端：调整标题文字大小，适配大屏 */
   .logo-text {
-    font-size: 20px;
+    font-size: 18px; /* 减小电脑端字体，确保在一行显示 */
   }
 
   .slogan {
     font-size: 14px;
   }
+
+  /* 电脑端：调整头像大小 */
+  .avatar-circle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .avatar-text {
+    font-size: 16px;
+  }
 }
 
-/* 7. 手机端小屏幕适配（保持原有，微调优化） */
+/* 10. 手机端小屏幕适配（保持原有，微调优化） */
 @media (max-width: 375px) {
   .slogan {
     font-size: 11px;
   }
 
   .logo-text {
-    font-size: 16px;
+    font-size: 14px; /* 手机端进一步减小字体 */
   }
 
   .top-container {
     padding: 10px 10px; /* 减小手机端左右内边距 */
+  }
+
+  /* 手机端：调整头像大小 */
+  .avatar-circle {
+    width: 24px;
+    height: 24px;
+  }
+
+  .avatar-text {
+    font-size: 10px;
+  }
+
+  /* 手机端：调整右侧内容间距 */
+  .right-content {
+    gap: 6px;
+  }
+
+  .user-avatar {
+    margin-right: 0px; /* 手机端适中的右边距 */
   }
 }
 
