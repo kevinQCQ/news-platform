@@ -1,35 +1,21 @@
+<!-- 主页内容展示区域 -->
 <template>
   <div class="content-area">
-    <div v-show="true" class="menu-container">
-      <van-grid
-        :column-num="calcColumnNum"
-        :class="menu - grid"
-        :border="false"
-      >
-        <van-grid-item
-          class="van-item"
-          v-for="(item, id) in menuList"
-          :key="id"
-          :text="item.text"
-          @click="handleMenuClick(item.type)"
-        />
-      </van-grid>
-    </div>
+    <navbar></navbar>
+    <carousel class="hero-left"></carousel>
 
-      <carousel class="hero-left"></carousel>
-
-    <!-- 主体两列布局：左列（要闻资讯 + 振兴动态），右列（专题专栏） -->
+    <!-- 主体两列布局：左列（要闻资讯 + 振兴动态），右列（专题专栏�? -->
     <div class="main-grid">
-      <!-- 左列：依次渲染 tabs，保证“振兴动态”在“要闻资讯”下方且左右对齐 -->
+      <!-- 左列：依次渲�? tabs，保证“振兴动态”在“要闻资讯”下方且左右对齐 -->
       <div class="left-col">
         <div class="recommend" v-for="(tab, tabIndex) in tabs" :key="tabIndex">
           <div class="recommend-header">
             <div class="recommend-title">{{ tab.title }}</div>
             <div class="more-group" @click="handleMoreClick()">
               <div class="more-text">更多</div>
-              <div class="more-icon"></div>
             </div>
           </div>
+          <div class="red-line"></div>
           <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
             <NewsList @click="toPage(tab.title)"></NewsList>
           </van-pull-refresh>
@@ -40,18 +26,38 @@
       <div class="right-col">
         <div class="special-panel">
           <div class="special-header">专题专栏</div>
+          <div class="red-line"></div>
           <div class="special-body">
-            <a class="special-card" href="javascript:void(0)" @click="goToSpecialTopic('lianghui')">
+            <a
+              class="special-card"
+              href="javascript:void(0)"
+              @click="goToSpecialTopic('lianghui')"
+            >
               <img src="https://picsum.photos/360/140?random=21" alt="专题" />
             </a>
-            <a class="special-card" href="javascript:void(0)" @click="goToSpecialTopic('tuopingongjian')">
+            <a
+              class="special-card"
+              href="javascript:void(0)"
+              @click="goToSpecialTopic('tuopingongjian')"
+            >
               <img src="https://picsum.photos/360/120?random=22" alt="专题" />
             </a>
             <ul class="special-list">
-              <li class="special-item" @click="goToSpecialTopic('lianghui')">2024："两会"聚焦</li>
-              <li class="special-item" @click="goToSpecialTopic('tuopingongjian')">我所经历的脱贫攻坚故事</li>
-              <li class="special-item" @click="goToSpecialTopic('chengguo')">巩固拓展脱贫攻坚成果典型</li>
-              <li class="special-item" @click="goToSpecialTopic('sanxiaxiang')">大学生"三下乡"活动</li>
+              <li class="special-item" @click="goToSpecialTopic('lianghui')">
+                2024年"两会"聚焦
+              </li>
+              <li
+                class="special-item"
+                @click="goToSpecialTopic('tuopingongjian')"
+              >
+                我所经历的脱贫攻坚故事?
+              </li>
+              <li class="special-item" @click="goToSpecialTopic('chengguo')">
+                巩固拓展脱贫攻坚成果典型
+              </li>
+              <li class="special-item" @click="goToSpecialTopic('sanxiaxiang')">
+                大学生"三下乡"活动
+              </li>
             </ul>
           </div>
         </div>
@@ -63,40 +69,66 @@
             <button class="lp-more" @click="goToLearningCenter()">更多></button>
           </div>
           <div class="lp-tabs">
-            <button 
-              class="lp-tab" 
+            <button
+              class="lp-tab"
               :class="{ active: activeLearningTab === 'gaoduan' }"
               @click="switchLearningTab('gaoduan')"
-            >高端观点</button>
-            <button 
-              class="lp-tab" 
+            >
+              高端观点
+            </button>
+            <button
+              class="lp-tab"
               :class="{ active: activeLearningTab === 'shuji' }"
               @click="switchLearningTab('shuji')"
-            >书记视窗</button>
-            <button 
-              class="lp-tab" 
+            >
+              书记视窗
+            </button>
+            <button
+              class="lp-tab"
               :class="{ active: activeLearningTab === 'xuexi' }"
               @click="switchLearningTab('xuexi')"
-            >学而时习</button>
+            >
+              学而时习
+            </button>
           </div>
           <div class="lp-body">
             <div class="lp-cards">
-              <a class="lp-card" href="javascript:void(0)" @click="goToLearningArticle(1)">
-                <img :src="currentLearningData.cards[0].image" :alt="currentLearningData.cards[0].title" />
-                <div class="lp-caption">{{ currentLearningData.cards[0].title }}</div>
+              <a
+                class="lp-card"
+                href="javascript:void(0)"
+                @click="goToLearningArticle(1)"
+              >
+                <img
+                  :src="currentLearningData.cards[0].image"
+                  :alt="currentLearningData.cards[0].title"
+                />
+                <div class="lp-caption">
+                  {{ currentLearningData.cards[0].title }}
+                </div>
               </a>
-              <a class="lp-card" href="javascript:void(0)" @click="goToLearningArticle(2)">
-                <img :src="currentLearningData.cards[1].image" :alt="currentLearningData.cards[1].title" />
-                <div class="lp-caption">{{ currentLearningData.cards[1].title }}</div>
+              <a
+                class="lp-card"
+                href="javascript:void(0)"
+                @click="goToLearningArticle(2)"
+              >
+                <img
+                  :src="currentLearningData.cards[1].image"
+                  :alt="currentLearningData.cards[1].title"
+                />
+                <div class="lp-caption">
+                  {{ currentLearningData.cards[1].title }}
+                </div>
               </a>
             </div>
             <ul class="lp-list">
-              <li 
-                class="lp-item" 
-                v-for="(item, index) in currentLearningData.list" 
+              <li
+                class="lp-item"
+                v-for="(item, index) in currentLearningData.list"
                 :key="index"
                 @click="goToLearningArticle(index + 3)"
-              >{{ item }}</li>
+              >
+                {{ item }}
+              </li>
             </ul>
           </div>
         </div>
@@ -112,6 +144,7 @@ import carousel from "./Carousel.vue";
 import HeadlinePanel from "./HeadlinePanel.vue";
 import NewsList from "./NewsList.vue";
 import Grid from "vant/es/grid";
+import Navbar from "./Navbar.vue";
 
 const router = useRouter();
 
@@ -123,13 +156,13 @@ const refreshing = ref(false);
 const calcColumnNum = computed(() => {
   const width = window.innerWidth;
   if (width >= 1200) return 8; // 超大屏幕
-  if (width >= 992) return 6; // 大屏幕
+  if (width >= 992) return 6; // 大屏�?
   if (width >= 768) return 4; // 中等屏幕
   return 3;
 });
 
-function handleMoreClick(){
-  router.push('/article-list');
+function handleMoreClick() {
+  router.push("/article-list");
 }
 
 function toPage(title) {
@@ -142,67 +175,67 @@ function goToSpecialTopic(topicId) {
 }
 
 // 学习园地相关状态和数据
-const activeLearningTab = ref('gaoduan');
+const activeLearningTab = ref("gaoduan");
 
 // 学习园地数据配置
 const learningData = {
   gaoduan: {
     cards: [
-      { 
-        title: '中央农办：以进一步推进乡村全面振兴', 
-        image: 'https://picsum.photos/360/200?random=41' 
+      {
+        title: "中央农办：以进一步推进乡村全面振�?",
+        image: "https://picsum.photos/360/200?random=41",
       },
-      { 
-        title: '韩俊：锚定建设农业强国总体目标', 
-        image: 'https://picsum.photos/360/200?random=42' 
-      }
+      {
+        title: "韩俊：锚定建设农业强国总体目标",
+        image: "https://picsum.photos/360/200?random=42",
+      },
     ],
     list: [
-      '魏后凯：扎实推进乡村全面振兴的根本遵循',
-      '黄承伟：加强农村基层党组织建设 推进乡村全面振兴',
-      '黄承伟：中国乡村振兴理论体系构建的基本问题',
-      '许健民：牢牢守住不发生规模性返贫底线'
-    ]
+      "魏后凯：扎实推进乡村全面振兴的根本",
+      "黄承伟：加强农村基层党组织健设 推进乡村全面振兴",
+      "黄承伟：中国乡村振兴理论体系构建的基本问题",
+      "许健民：牢牢守住不发生规模性返贫底线",
+    ],
   },
   shuji: {
     cards: [
-      { 
-        title: '县委书记谈乡村振兴实践与思考', 
-        image: 'https://picsum.photos/360/200?random=51' 
+      {
+        title: "县委书记谈乡村振兴实践与思想",
+        image: "https://picsum.photos/360/200?random=51",
       },
-      { 
-        title: '村支书分享脱贫攻坚成功经验', 
-        image: 'https://picsum.photos/360/200?random=52' 
-      }
+      {
+        title: "村支书分享脱贫攻坚成功经验",
+        image: "https://picsum.photos/360/200?random=52",
+      },
     ],
     list: [
-      '县委书记：党建引领乡村振兴的实践探索',
-      '村支书：如何带领村民脱贫致富',
-      '第一书记：驻村帮扶工作的心得体会',
-      '乡镇书记：推进农业现代化的思考'
-    ]
+      "县委书记：党建引领乡村振兴的实践探索",
+      "村支书：如何带领村民脱贫致富",
+      "乡镇书记：推进农业现代化的思路",
+      "第一书记：驻村帮扶工作的心得体会",
+    ],
   },
   xuexi: {
     cards: [
-      { 
-        title: '学习习近平总书记关于乡村振兴重要论述', 
-        image: 'https://picsum.photos/360/200?random=61' 
+      {
+        title: "学习习近平总书记关于乡村振兴重要论述",
+        image: "https://picsum.photos/360/200?random=61",
       },
-      { 
-        title: '乡村振兴政策解读与学习要点', 
-        image: 'https://picsum.photos/360/200?random=62' 
-      }
+      {
+        title: "乡村振兴政策解读与学习要点",
+        image: "https://picsum.photos/360/200?random=62",
+      },
     ],
     list: [
       '学习《习近平关于"三农"工作的重要论述学习读本》',
-      '乡村振兴战略规划学习要点',
-      '巩固拓展脱贫攻坚成果政策解读',
-      '新时代"三农"工作学习指南'
-    ]
-  }
+      '新时代"三农"工作学习指南',
+      "巩固拓展脱贫攻坚成果政策解读",
+      "乡村振兴战略规划学习要点",
+    ],
+  },
 };
 
-// 当前显示的学习园地数据
+// 当前显示的学习园地数�?
 const currentLearningData = computed(() => {
   return learningData[activeLearningTab.value] || learningData.gaoduan;
 });
@@ -214,7 +247,7 @@ function switchLearningTab(tabId) {
 
 // 学习园地跳转函数
 function goToLearningCenter() {
-  router.push('/learning-center');
+  router.push("/learning-center");
 }
 
 function goToLearningArticle(articleId) {
@@ -244,7 +277,7 @@ const onRefresh = () => {
   finished.value = false;
 
   // 重新加载数据
-  // 将 loading 设置为 true，表示处于加载状态
+  // �? loading 设置�? true，表示处于加载状�?
   loading.value = true;
   onLoad();
 };
@@ -293,21 +326,21 @@ const menuList = ref([
   },
 ]);
 
-// 1. 轮播图数据（保持简洁，实际项目可加alt文案）
+// 1. 轮播图数据（保持简洁，实际项目可加alt文案�?
 const swipeList = ref([
-  { imgUrl: "https://picsum.photos/800/300?random=1", alt: "轮播图1" },
-  { imgUrl: "https://picsum.photos/800/300?random=2", alt: "轮播图2" },
-  { imgUrl: "https://picsum.photos/800/300?random=3", alt: "轮播图3" },
+  { imgUrl: "https://picsum.photos/800/300?random=1", alt: "轮播�?1" },
+  { imgUrl: "https://picsum.photos/800/300?random=2", alt: "轮播�?2" },
+  { imgUrl: "https://picsum.photos/800/300?random=3", alt: "轮播�?3" },
 ]);
 
-// 3. 列表配置（动态tabs，独立数据状态，避免重复逻辑）
+// 3. 列表配置（动态tabs，独立数据状态，避免重复逻辑�?
 const tabs = ref([
   {
     title: "要闻资讯",
     list: [],
     loading: false,
     finished: false,
-    page: 1, // 独立页码，避免交叉影响
+    page: 1, // 独立页码，避免交叉影�?
   },
   {
     title: "振兴动态",
@@ -322,32 +355,52 @@ const retlist = () => {
   return newsData.value.slice(0, 3);
 };
 
-
-function handleMenuClick(){
-
-  router.push('/article-list');
+function handleMenuClick() {
+  router.push("/article-list");
 }
 </script>
 
 <style scoped>
-/* 菜单网格背景改为白色 */
-.menu-grid {
-  background-color: #fff; /* 修改为白色 */
-}
 /* 菜单容器背景改为白色 */
 .menu-container {
   margin-top: 65px;
-  background-color: #fff; /* 添加白色背景 */
+  background-color: #d74339;
+}
+
+/* 2. 网格容器：清除默认间距，贴合红色背景 */
+.menu-grid {
+  margin: 0; /* 清除 Vant 默认margin，避免红色背景出现空白边 */
+  padding: 0 16px; /* 左右内边距，让菜单项与屏幕边缘有间距 */
+}
+
+/* 3. 单个菜单项：清除默认白色背景，继承外层红色 */
+.van-item {
+  background-color: transparent !important; /* 清除 Vant 默认白色背景，显示外层红色 */
+  border: none !important; /* 清除 Vant 默认边框（避免出现灰色边框破坏红色背景） */
+  /* 控制菜单项高度和文字居中（确保点击区域足够大，交互更友好） */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 4. 菜单文字：设置为白色，调整字号和粗细（确保文字清晰） */
+.van-item .van-grid-item__text {
+  color: #ffffff !important; /* 文字白色（!important 用于覆盖 Vant 默认文字色） */
+  font-size: 16px; /* 文字大小（可根据需求调整，如14px、18px） */
+  font-weight: 500; /* 文字粗细（500为中等粗细，比默认更醒目） */
 }
 
 /* 基础容器：简化高度计算，避免溢出 */
 .content-area {
   background-color: #ffffff;
-  min-height: calc(100vh - 96px); /* 顶部栏46px + 底部栏50px，简化计算 */
-  padding-bottom: 10px; /* 底部留空，避免被底部栏遮挡 */
+  min-height: calc(100vh - 96px); /* 顶部�?46px + 底部�?50px，简化计�? */
+  padding-bottom: 10px; /* 底部留空，避免被底部栏遮�? */
+  margin-top:0px;
+  padding-top:0px;
 }
 
-/* 顶部：轮播 + 要闻面板 并排 */
+/* 顶部：轮�? + 要闻面板 并排 */
 .hero-row {
   display: flex;
   gap: 12px;
@@ -368,7 +421,7 @@ function handleMenuClick(){
   margin-top: 0;
 }
 
-/* 去除轮播在并排时的左右外边距，避免把右侧挤出可视区 */
+/* 去除轮播在并排时的左右外边距，避免把右侧挤出可视�? */
 .hero-left :deep(.carousel-container) {
   margin: 0;
 }
@@ -412,7 +465,7 @@ function handleMenuClick(){
   padding: 12px 16px;
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: #d74339;
   background-color: #fff;
 }
 
@@ -539,10 +592,12 @@ function handleMenuClick(){
   padding: 8px 10px;
   font-size: 14px;
   color: #fff;
-  background: linear-gradient(transparent, rgba(0,0,0,0.55));
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
 }
 
-.lp-list { margin-top: 6px; }
+.lp-list {
+  margin-top: 6px;
+}
 .lp-item {
   font-size: 14px;
   color: #333;
@@ -554,7 +609,7 @@ function handleMenuClick(){
   transition: color 0.2s ease;
 }
 .lp-item::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 6px;
   top: 0.85em;
@@ -596,7 +651,7 @@ function handleMenuClick(){
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px; /* 简化间距写法 */
+  gap: 4px; /* 简化间距写�? */
 }
 .icon-img {
   width: 36px; /* 缩小图标，更精致 */
@@ -606,24 +661,16 @@ function handleMenuClick(){
 }
 .category-name {
   font-size: 12px;
-  color: #333; /* 加深颜色，提升可读性 */
+  color: #333; /* 加深颜色，提升可读�? */
 }
 
-/* 推荐列表：精简边框，优化间距 */
+/* 推荐列表：精简边框，优化间�? */
 .recommend {
   background-color: #fff;
   border-radius: 12px;
   overflow: hidden; /* 确保圆角生效 */
 }
-.recommend-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  padding: 12px 16px; /* 左右加大内边距，更舒展 */
-}
-.recommend-list {
-  padding: 8px 16px 16px; /* 顶部留空，底部加大，避免加载文案拥挤 */
-}
+
 /* 卡片：简化样式，增加过渡 */
 .recommend-card {
   margin-top: 10px;
@@ -650,7 +697,7 @@ function handleMenuClick(){
   height: 80px !important;
   border-radius: 6px !important;
 }
-/* 卡片底部：简化间距 */
+/* 卡片底部：简化间�? */
 .card-footer {
   display: flex;
   justify-content: space-between;
@@ -673,8 +720,8 @@ function handleMenuClick(){
 }
 .recommend-header {
   display: flex; /* 开启Flex布局 */
-  align-items: center; /* 子元素垂直居中（避免文字/图标上下错位） */
-  justify-content: space-between; /* 左右元素分别靠最左、最右 */
+  align-items: center; /* 子元素垂直居中（避免文字/图标上下错位�? */
+  justify-content: space-between; /* 左右元素分别靠最左、最�? */
   padding: 12px 16px; /* 内边距，让内容不贴边 */
   background-color: #fff;
 }
@@ -683,16 +730,16 @@ function handleMenuClick(){
 .recommend-title {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: #d74339;
 }
 
-/* 3. 右侧组合：包裹文字和图标，确保两者紧密排列 */
+/* 3. 右侧组合：包裹文字和图标，确保两者紧密排�? */
 .more-group {
-  display: flex; /* 子元素（文字+图标）水平排列 */
-  align-items: center; /* 文字和图标垂直居中 */
-  gap: 4px; /* 文字和图标之间的间距（可调整） */
+  display: flex; /* 子元素（文字+图标）水平排�? */
+  align-items: center; /* 文字和图标垂直居�? */
+  gap: 4px; /* 文字和图标之间的间距（可调整�? */
   color: #666; /* 右侧文字/图标的颜色（比标题浅，主次分明） */
-  cursor: pointer; /* 鼠标悬浮变指针，提示可点击 */
+  cursor: pointer; /* 鼠标悬浮变指针，提示可点�? */
 }
 
 /* 4. 更多文字：基础样式 */
@@ -700,12 +747,12 @@ function handleMenuClick(){
   font-size: 14px;
 }
 
-/* 5. 更多图标：用CSS画一个右向箭头（无需额外图片） */
+/* 5. 更多图标：用CSS画一个右向箭头（无需额外图片�? */
 .more-icon {
   width: 8px; /* 图标宽度 */
   height: 8px; /* 图标高度 */
   border-top: 1.5px solid currentColor; /* 上边框（颜色继承父元素） */
-  border-right: 1.5px solid currentColor; /* 右边框 */
+  border-right: 1.5px solid currentColor; /* 右边�? */
   transform: rotate(45deg); /* 旋转45度，变成右向箭头 */
 }
 
@@ -713,4 +760,11 @@ function handleMenuClick(){
 .more-group:hover {
   color: #ff6700; /*  hover时变主色，提示可点击 */
 }
+.red-line {
+  width: 100%; /* 线条宽度，可根据需要调整，100% 表示占满父容器宽度 */
+  height: 2px; /* 线条高度，即线条粗细 */
+  background-color: #e63946; /* 线条颜色，这里用你示例中的红色 */
+}
+
+
 </style>

@@ -1,3 +1,4 @@
+<!-- 小卡片跳转的页面 -->
 <template>
   <div class="learning-center-page">
     <div class="container">

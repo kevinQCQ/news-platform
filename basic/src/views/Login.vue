@@ -1,312 +1,384 @@
 <template>
-  <div class="auth-container">
-    <!-- 背景装饰 -->
-    <div class="auth-bg"></div>
+  <div class="login-container">
+    <!-- 背景层 -->
+    <div class="background"></div>
     
-    <!-- 主卡片 -->
-    <div class="auth-card">
-      <!-- 标题区域 -->
-      <div class="auth-header">
-        <h1 class="auth-title">{{ isLoginMode ? '欢迎登录' : '创建账号' }}</h1>
-        <p class="auth-subtitle">
-          {{ isLoginMode ? '请输入账号信息登录' : '填写以下信息完成注册' }}
-        </p>
+    <!-- 主容器：包含插画和登录表单 -->
+    <div class="main-content">
+      <!-- 插画区域 -->
+      <div class="illustration">
+        <img src="https://picsum.photos/800/600?random=10" alt="背景插画" class="illustration-img" />
+        
+        <!-- 装饰性文字元素 -->
+        <div class="illustration-text">
+          <h2>欢迎使用通讯员系统</h2>
+          <p>高效、安全的信息管理平台</p>
+        </div>
       </div>
       
-      <!-- 表单区域 -->
-      <form @submit.prevent="handleSubmit" class="auth-form">
-        <!-- 注册模式特有字段 -->
-        <template v-if="!isLoginMode">
-          <!-- 用户名 -->
+      <!-- 登录表单卡片（嵌入在插画上） -->
+      <div class="login-card"  v-if="isLogin">
+        <div class="card-header">
+          <div class="logo">
+            <span class="system-name">通讯员系统</span>
+          </div>
+          <h3 class="login-title">账号登录</h3>
+        </div>
+        
+        <form @submit.prevent="handleLogin" class="login-form">
+          <!-- 用户名输入 -->
           <div class="form-group">
-            <label for="username" class="form-label">用户名</label>
             <input
               type="text"
-              id="username"
               v-model="formData.username"
+              placeholder="请输入用户名/手机号"
               class="form-input"
-              placeholder="请设置用户名"
-              minlength="2"
-              maxlength="16"
               required
-            >
-            <p class="form-hint">2-16位字符，可包含字母、数字和下划线</p>
+            />
           </div>
           
-          <!-- 邮箱 -->
+          <!-- 密码输入 -->
           <div class="form-group">
-            <label for="email" class="form-label">邮箱</label>
             <input
-              type="email"
-              id="email"
-              v-model="formData.email"
-              class="form-input"
-              placeholder="请输入邮箱"
-              required
-            >
-            <p class="form-hint">用于账号验证和密码找回</p>
-          </div>
-        </template>
-        
-        <!-- 手机号（登录/注册都需要） -->
-        <div class="form-group">
-          <label for="phone" class="form-label">手机号</label>
-          <input
-            type="tel"
-            id="phone"
-            v-model="formData.phone"
-            class="form-input"
-            placeholder="请输入手机号"
-            pattern="1[3-9]\d{9}"
-            required
-          >
-        </div>
-        
-        <!-- 密码 -->
-        <div class="form-group">
-          <label for="password" class="form-label">密码</label>
-          <div class="password-wrapper">
-            <input
-              :type="showPassword ? 'text' : 'password'"
-              id="password"
+              type="password"
               v-model="formData.password"
-              class="form-input password-input"
-              placeholder="请设置密码"
-              minlength="6"
-              maxlength="20"
+              placeholder="请输入密码"
+              class="form-input"
               required
-            >
-            <button
-              type="button"
-              class="toggle-password"
-              @click="showPassword = !showPassword"
-            >
-              {{ showPassword ? '隐藏' : '显示' }}
-            </button>
+            />
           </div>
-          <p class="form-hint">6-20位字符，建议包含字母和数字</p>
+          
+          <!-- 验证码区域 -->
+          <div class="form-group captcha-group">
+            <input
+              type="text"
+              v-model="formData.captcha"
+              placeholder="请输入验证码"
+              class="form-input captcha-input"
+              required
+            />
+            <img
+              :src="captchaImg"
+              alt="验证码"
+              class="captcha-img"
+              @click="refreshCaptcha"
+            />
+          </div>
+          
+          <!-- 自动登录选项 -->
+          <div class="form-options">
+            <label class="auto-login">
+              <input
+                type="checkbox"
+                v-model="formData.autoLogin"
+                class="auto-login-checkbox"
+              />
+              自动登录
+            </label>
+            <a href="#" class="forgot-password" @click="isLogin = !isLogin">注册账号</a>
+          </div>
+          
+          <!-- 登录按钮 -->
+          <button type="submit" class="login-btn">登录</button>
+        </form>
+      </div>
+
+      <!-- 注册表单卡片（嵌入在插画上） -->
+      <div class="login-card" v-if="!isLogin">
+        <div class="card-header">
+          <div class="logo">
+            <span class="system-name">通讯员系统</span>
+          </div>
+          <h3 class="login-title">账号注册</h3>
         </div>
         
-        <!-- 提交按钮 -->
-        <button type="submit" class="submit-btn">
-          {{ isLoginMode ? '登录' : '注册' }}
-        </button>
-        
-        <!-- 切换模式 -->
-        <div class="mode-switch">
-          <span>
-            {{ isLoginMode ? '还没有账号？' : '已有账号？' }}
-            <button
-              type="button"
-              class="switch-btn"
-              @click="toggleMode"
-            >
-              {{ isLoginMode ? '立即注册' : '登录' }}
-            </button>
-          </span>
-        </div>
-      </form>
+        <form @submit.prevent="handleLogin" class="login-form" >
+          <!-- 用户名输入 -->
+          <div class="form-group">
+            <input
+              type="text"
+              v-model="formData.username"
+              placeholder="请输入邮箱号"
+              class="form-input"
+              required
+            />
+          </div>
+          
+          <!-- 密码输入 -->
+          <div class="form-group">
+            <input
+              type="password"
+              v-model="formData.password"
+              placeholder="请输入密码"
+              class="form-input"
+              required
+            />
+          </div>
+
+          <!-- 确认密码输入 -->
+          <div class="form-group">
+            <input
+              type="password"
+              v-model="formData.password"
+              placeholder="请输入密码"
+              class="form-input"
+              required
+            />
+          </div>
+          
+          <!-- 验证码区域 -->
+          <div class="form-group captcha-group">
+            <input
+              type="text"
+              v-model="formData.captcha"
+              placeholder="请输入验证码"
+              class="form-input captcha-input"
+              required
+            />
+            <button class="captcha-img" @click="refreshCaptcha">获取验证码</button>
+          </div>
+          
+          <!-- 自动登录选项 -->
+          <div class="form-options">
+            <label class="auto-login">
+              <input
+                type="checkbox"
+                v-model="formData.autoLogin"
+                class="auto-login-checkbox"
+              />
+              自动登录
+            </label>
+            <a href="#" class="forgot-password" @click="isLogin = !isLogin">返回登录</a>
+          </div>
+          
+          <!-- 登录按钮 -->
+          <button type="submit" class="login-btn">登录</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
-// 路由实例
-const router = useRouter();
-
-// 登录/注册模式切换
-const isLoginMode = ref(true);
-
-// 密码显示状态
-const showPassword = ref(false);
+const isLogin = ref(true);
 
 // 表单数据
-const formData = reactive({
+const formData = ref({
   username: '',
-  email: '',
-  phone: '',
-  password: ''
+  password: '',
+  captcha: '',
+  autoLogin: false
 });
 
-// 切换登录/注册模式
-const toggleMode = () => {
-  isLoginMode.value = !isLoginMode.value;
-  // 清空表单
-  Object.keys(formData).forEach(key => {
-    formData[key] = '';
-  });
-  // 重置密码显示状态
-  showPassword.value = false;
+// 验证码图片
+const captchaImg = ref(`https://picsum.photos/120/40?random=${Math.random()}`);
+
+// 刷新验证码
+const refreshCaptcha = () => {
+  captchaImg.value = `https://picsum.photos/120/40?random=${Math.random()}`;
+  formData.value.captcha = '';
 };
 
-// 表单提交处理
-const handleSubmit = () => {
-  if (isLoginMode.value) {
-    // 登录逻辑
-    console.log('登录信息:', {
-      phone: formData.phone,
-      password: formData.password
-    });
-    // 模拟登录成功
-    alert('登录成功！');
-    router.push('/'); // 登录成功后跳转到首页
-  } else {
-    // 注册逻辑
-    console.log('注册信息:', {
-      username: formData.username,
-      email: formData.email,
-      phone: formData.phone,
-      password: formData.password
-    });
-    // 模拟注册成功
-    alert('注册成功！即将跳转到登录页面');
-    toggleMode(); // 注册成功后切换到登录模式
-  }
+// 登录处理
+const handleLogin = () => {
+  console.log('登录数据:', formData.value);
+  // 实际项目中这里会调用登录接口
 };
+
+
+
 </script>
 
 <style scoped>
-/* 基础样式 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* 容器样式 */
-.auth-container {
-  margin-top:60px;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+.login-container {
+  width: 100vw;
+  height: 100vh;
   position: relative;
+  overflow: hidden;
 }
 
-/* 背景样式 */
-.auth-bg {
+/* 背景层 */
+.background {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4eaf5 100%);
+  width: 100%;
+  height: 100%;
+  background-color: #cdd3db;
   z-index: 1;
 }
 
-/* 卡片样式 */
-.auth-card {
-  width: 100%;
-  max-width: 400px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 30px;
+/* 主内容容器 */
+.main-content {
   position: relative;
   z-index: 2;
-  transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+  max-width: 1700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.auth-card:hover {
-  transform: translateY(-5px);
+/* 插画区域 */
+.illustration {
+  position: relative;
+  width: 95%;
+  height: 90vh;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* 标题样式 */
-.auth-header {
+.illustration-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 插画上的文字 */
+.illustration-text {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.illustration-text h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.illustration-text p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* 登录卡片（嵌入在插画上） */
+.login-card {
+  position: absolute;
+  right: 130px;
+  width: 350px;
+  height: 70vh;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  z-index: 10;
+  transform: translateY(-10px);
+}
+
+/* 卡片头部 */
+.card-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
-.auth-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 8px;
 }
 
-.auth-subtitle {
-  font-size: 14px;
+.logo-img {
+  width: 20px;
+  height: 36px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.system-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.login-title {
+  font-size: 18px;
   color: #666;
+  font-weight: 500;
 }
 
 /* 表单样式 */
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.login-form {
+  width: 90%;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  margin-bottom: 18px;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px 15px;
+  padding: 8px 15px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 15px;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  transition: border-color 0.3s;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #4285f4;
-  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
 }
 
-.form-hint {
-  font-size: 12px;
-  color: #999;
-  margin-top: 2px;
+/* 验证码区域 */
+.captcha-group {
+  display: flex;
+  gap: 10px;
 }
 
-/* 密码输入框样式 */
-.password-wrapper {
-  position: relative;
+.captcha-input {
+  flex: 1;
 }
 
-.password-input {
-  padding-right: 80px;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 13px;
+.captcha-img {
+  width: 120px;
+  height: 44px;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  object-fit: cover;
 }
 
-.toggle-password:hover {
+/* 表单选项 */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+.auto-login {
+  display: flex;
+  align-items: center;
+  color: #666;
+  cursor: pointer;
+}
+
+.auto-login-checkbox {
+  margin-right: 5px;
+}
+
+.forgot-password {
   color: #4285f4;
-  background-color: #f5f7fa;
+  text-decoration: none;
 }
 
-/* 提交按钮样式 */
-.submit-btn {
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* 登录按钮 */
+.login-btn {
   width: 100%;
-  padding: 14px;
+  padding: 8px;
   background-color: #4285f4;
   color: white;
   border: none;
@@ -314,57 +386,30 @@ const handleSubmit = () => {
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.3s;
 }
 
-.submit-btn:hover {
+.login-btn:hover {
   background-color: #3367d6;
 }
 
-.submit-btn:active {
-  transform: scale(0.98);
-}
-
-/* 模式切换样式 */
-.mode-switch {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #666;
-}
-
-.switch-btn {
-  background: none;
-  border: none;
-  color: #4285f4;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 0 3px;
-  font-weight: 500;
-}
-
-.switch-btn:hover {
-  text-decoration: underline;
-}
-
 /* 响应式调整 */
-@media (max-width: 480px) {
-  .auth-card {
-    padding: 20px 15px;
+@media (max-width: 900px) {
+  .illustration {
+    width: 100%;
   }
   
-  .auth-title {
-    font-size: 22px;
+  .login-card {
+    position: relative;
+    right: 0;
+    margin-top: -100px;
+    width: 90%;
+    max-width: 350px;
   }
   
-  .form-input {
-    padding: 11px 12px;
-    font-size: 14px;
-  }
-  
-  .submit-btn {
-    padding: 12px;
-    font-size: 15px;
+  .main-content {
+    flex-direction: column;
   }
 }
 </style>
+    

@@ -1,3 +1,4 @@
+<!-- 主页的新闻列表 -->
 <template>
   <van-list
       v-model="loading"

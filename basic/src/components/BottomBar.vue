@@ -1,3 +1,4 @@
+<!-- �ײ��� -->
 <template>
   <div id="bottom_bar">
     <p class="bottom-text">主办方：大学生报社</p>

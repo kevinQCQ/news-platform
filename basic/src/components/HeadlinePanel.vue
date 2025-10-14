@@ -1,3 +1,4 @@
+<!-- 主页小专栏，在轮播图右边 -->
 <template>
     <div class="panel-wrap">
         <div class="panel-header">

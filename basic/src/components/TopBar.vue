@@ -1,7 +1,9 @@
+<!--顶部栏 -->
 <template>
   <div id="top-bar">
     <!-- 外层容器：统一控制布局，通过媒体查询切换手机/电脑端样式 -->
     <div class="top-container">
+      
       <!-- 左侧区域：包裹标题和标语，电脑端靠左，手机端居中 -->
       <div class="left-content">
         <div class="text-content">
@@ -13,12 +15,16 @@
       <!-- 右侧区域：用户头像和下拉菜单 -->
       <div class="right-content">
         <!-- 用户头像 -->
-        <div class="user-avatar" @click="toggleUserMenu">
+        <div
+          v-if="userStore.username"
+          class="user-avatar"
+          @click="toggleUserMenu"
+        >
           <div class="avatar-circle">
             <span class="avatar-text">{{ userInitial }}</span>
           </div>
         </div>
-        
+
         <!-- 用户下拉菜单 -->
         <van-popover
           v-model:show="showUserMenu"
@@ -59,9 +65,11 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useData } from "../store/data";
+import { showToast } from 'vant';
 
 const router = useRouter();
-
+const userStore = useData();
 const value1 = ref(-2);
 const showUserMenu = ref(false);
 
@@ -69,6 +77,14 @@ const showUserMenu = ref(false);
 const userEmail = ref("askn2005@qq.com");
 const userName = ref("艾斯卡诺"); // 改为中文用户名
 const isLoggedIn = ref(true); // 模拟登录状态
+
+const errorMsg = (val) => {
+  showToast({
+    message: val,
+    type: 'fail',
+    duration: 1500,
+  });
+};
 
 // 计算用户首字母
 const userInitial = computed(() => {
@@ -89,8 +105,8 @@ const displayUserName = computed(() => {
 const option1 = [
   { text: "首页", value: -1 },
   { text: "个人主页", value: 0 },
-  { text: "登录注册" ,value: 1 },
-  { text: "发布文章", value: 2 },
+  { text: "通讯员申请", value: 1 },
+  { text: "投稿通道", value: 2 },
   { text: "振兴动态", value: 3 },
   { text: "校园活动", value: 4 },
   { text: "校园风采", value: 5 },
@@ -102,17 +118,32 @@ function toHome() {
   router.push("/");
 }
 
-function toPage(val){
-  if(val === 1){
+function toPage(val) {
+  if (val === 1) {
+    if (userStore.username !== "") {
+      errorMsg("请先退出登录");
+      val=-1;
+      return;
+    }
     router.push("/login");
   }
-  if(val === 0){
+  if (val === 0) {
+    if (userStore.username === "") {
+      errorMsg("请先登录");
+      val=-1;
+      return;
+    }
     router.push("/admin");
   }
-  if(val === -1){
+  if (val === -1) {
     router.push("/");
   }
-  if(val === 2){
+  if (val === 2) {
+    if (userStore.username === "") {
+      errorMsg("请先登录");
+      val=-1;
+      return;
+    }
     router.push("/article-upload");
   }
 }
@@ -122,7 +153,6 @@ function toggleUserMenu() {
   showUserMenu.value = !showUserMenu.value;
 }
 
-
 function logout() {
   // 退出登录的逻辑
   console.log("Logout");
@@ -130,14 +160,11 @@ function logout() {
   // 可以跳转到登录页面
   router.push("/login");
 }
-
 </script>
 
 <style scoped>
 /* 1. 基础容器样式：手机端默认居中布局 */
 .top-container {
-  position: fixed;
-  top: 0;
   left: 0;
   right: 0;
   z-index: 999;
@@ -145,11 +172,12 @@ function logout() {
   align-items: center;
   justify-content: center; /* 手机端：整体居中（标题+菜单） */
   background-color: #fff;
-  padding: 10px 15px;
+  padding:15px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  height: 45px;
+  height: 35px;
+  margin-bottom:0px;
+  padding-bottom:0;
 }
-
 
 
 /* 4. 文字内容样式：保持原有对齐和间距 */
@@ -172,10 +200,10 @@ function logout() {
   white-space: nowrap; /* 防止标语换行 */
 }
 
-/* 5. 用户头像样式 */
+/* 头像容器：微调与右侧的距离（可选，若仍有间隙可加） */
 .user-avatar {
-  background-color: rgb(247, 247, 247);
-  margin-right: 8px; /* 适中的右边距，让头像与菜单图标距离合适 */
+  margin-right: 0; /* 确保头像右侧无额外间距 */
+  margin-left: 10px; /* 微调左侧距离 */
   cursor: pointer;
 }
 
@@ -259,9 +287,7 @@ function logout() {
   background-color: #ffffff;
   display: flex;
   align-items: center;
-  gap: 8px; /* 恢复正常的间距 */
-  margin-right: 8px; /* 适中的右边距 */
-  margin-left: 6px;
+  gap: 3px; /* 恢复正常的间距 */
 }
 
 /* 8. 下拉菜单基础样式（保持原有） */
@@ -270,6 +296,8 @@ function logout() {
   border: none !important;
   background: #ffffff !important;
   height: auto;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .icon-only ::v-deep(.van-dropdown-item__content) {
@@ -277,8 +305,20 @@ function logout() {
 }
 
 .icon-only {
-  width: 50px;
+  width: auto; /* 让宽度由内容决定，避免固定宽度导致留白 */
   box-shadow: none;
+  /* 新增：消除下拉菜单自身的内边距 */
+  padding: 0;
+}
+
+/* 下拉菜单项：消除内部间距 */
+.icon-only ::v-deep(.van-dropdown-menu__bar) {
+  box-shadow: none !important;
+  border: none !important;
+  background: #ffffff !important;
+  height: auto;
+  padding: 0 !important; /* 强制消除内边距 */
+  margin: 0 !important; /* 强制消除外边距 */
 }
 
 .dropdown-content {
@@ -286,8 +326,6 @@ function logout() {
   padding: 4px 0;
   background-color: #4f0505;
 }
-
-
 
 /* 9. 媒体查询：屏幕宽度 > 768px（电脑端）时调整布局 */
 @media (min-width: 768px) {
